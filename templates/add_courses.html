@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    {% extends "base.html" %}
+    {% block content %}
+    <head>
+        <title>Add Course</title>
+    </head>
+    <body>
+        <div class="container mt-4">
+            <h1 class="text-center mb-4">Add a New Course</h1>
+            <form method="post" class="row g-3">
+                <div class="col-md-6">
+                    <label for="code" class="form-label">Course Code</label>
+                    <input type="text" id="code" name="code" class="form-control" placeholder="Enter course code">
+                </div>
+                <div class="col-md-6">
+                    <label for="name" class="form-label">Course Name</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Enter course name">
+                </div>
+                <div class="col-md-6">
+                    <label for="instructor" class="form-label">Instructor</label>
+                    <input type="text" id="instructor" name="instructor" class="form-control" placeholder="Enter instructor's name">
+                </div>
+                <div class="col-md-6">
+                    <label for="semester" class="form-label">Semester</label>
+                    <input type="text" id="semester" name="semester" class="form-control" placeholder="Enter semester">
+                </div>
+                <div class="col-md-6">
+                    <label for="schedule" class="form-label">Schedule</label>
+                    <input type="text" id="schedule" name="schedule" class="form-control" placeholder="Enter schedule">
+                </div>
+                <div class="col-md-6">
+                    <label for="classroom" class="form-label">Classroom</label>
+                    <input type="text" id="classroom" name="classroom" class="form-control" placeholder="Enter classroom">
+                </div>
+                <div class="col-md-6">
+                    <label for="prerequisites" class="form-label">Prerequisites</label>
+                    <input type="text" id="prerequisites" name="prerequisites" class="form-control" placeholder="Enter prerequisites">
+                </div>
+                <div class="col-md-6">
+                    <label for="grading" class="form-label">Grading</label>
+                    <input type="text" id="grading" name="grading" class="form-control" placeholder="Enter grading criteria">
+                </div>
+                <div class="col-12">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea id="description" name="description" class="form-control" rows="4" placeholder="Enter course description"></textarea>
+                </div>
+                <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-primary">Add Course</button>
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Home</a>
+                </div>
+            </form>
+        </div>
+    </body>
+    {% endblock %}
+</html>

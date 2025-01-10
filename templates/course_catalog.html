@@ -5,6 +5,8 @@
     {% for course in courses %}
         <li><a href="{{ url_for('course_details', code=course['code']) }}">{{ course.name }}</a> - {{ course.code }}</li>
     {% endfor %}
+    <br>
+    <a href="{{ url_for('add_courses') }}" class="btn btn-primary btn-success">Add courses</a>
 </ul>
 {% endblock %}
 
