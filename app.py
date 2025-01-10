@@ -1,5 +1,6 @@
 import json
 import os
+import logging
 from flask import Flask, render_template, request, redirect, url_for, flash
 
 # Flask App Initialization
@@ -80,5 +81,5 @@ def add_courses():
     return render_template('add_courses.html')
 
 
-if __name__ == '__main__':
+if __name__ == '_main_':
     app.run(debug=True)
