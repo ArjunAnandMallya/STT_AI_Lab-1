@@ -3,6 +3,18 @@ import os
 import logging
 from flask import Flask, render_template, request, redirect, url_for, flash
 
+
+from opentelemetry import trace
+from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+
+
+# Configure logging
+logging.basicConfig( level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(name)s %(message)s')
 # Flask App Initialization
 app = Flask(__name__)
 app.secret_key = 'secret'
@@ -70,16 +82,16 @@ def add_courses():
                     Please fill in all the required fields,
                     missing fields: {missing}
                 ''', "error")
-            # logging.error(f"Course details are missing.  Please try again by filling in all the required fields: Course code, Course name and Instructor. Missing fields: {missing}")
+            logging.error(f"Course details are missing.  Please try again by filling in all the required fields: Course code, Course name and Instructor. Missing fields: {missing}")
             return render_template('add_courses.html', course=course)
         
         else:
             save_courses(course)    
             flash(f"Course '{course['name']}' added successfully!", "success")
-            # logging.info(f"Course '{course['name']}' with code '{course['code']}' added to the catalog.")
+            logging.info(f"Course '{course['name']}' with code '{course['code']}' added to the catalog.")
             return redirect(url_for('course_catalog'))
     return render_template('add_courses.html')
 
 
-if __name__ == '_main_':
+if __name__ == '__main__':
     app.run(debug=True)
