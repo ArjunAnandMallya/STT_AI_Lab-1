@@ -9,6 +9,10 @@ from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+
+from opentelemetry.trace import SpanKind
+
 
 
 
@@ -19,6 +23,28 @@ logging.basicConfig( level=logging.DEBUG,
 app = Flask(__name__)
 app.secret_key = 'secret'
 COURSE_FILE = 'course_catalog.json'
+
+FlaskInstrumentor().instrument_app(app)
+
+# Get Jaeger host and port from environment variables
+jaeger_host = os.getenv("JAEGER_HOST", "localhost")
+jaeger_port = int(os.getenv("JAEGER_PORT", 6831))
+
+# Set up the TracerProvider with resource attributes
+trace.set_tracer_provider(
+    TracerProvider(resource=Resource.create({"Course_Catalog": "app.py"}))
+)
+
+# Configure Jaeger Exporter
+jaeger_exporter = JaegerExporter(
+    agent_host_name=jaeger_host,
+    agent_port=jaeger_port
+)
+
+# Add the exporter to the trace provider
+trace.get_tracer_provider().add_span_processor(
+    BatchSpanProcessor(jaeger_exporter)
+)
 
 
 # Utility Functions

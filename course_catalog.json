@@ -20,5 +20,16 @@
         "prerequisites": "Basic Python, Linux",
         "grading": "50% Assignment, 50% Quiz",
         "description": ""
+    },
+    {
+        "code": "HS 112",
+        "name": "Intro to writing 2",
+        "instructor": "Nivid",
+        "semester": "2",
+        "schedule": "",
+        "classroom": "",
+        "prerequisites": "",
+        "grading": "",
+        "description": ""
     }
 ]
