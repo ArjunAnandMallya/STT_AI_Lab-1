@@ -12,11 +12,14 @@ from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.trace import SpanKind
 
 tracer = trace.get_tracer(__name__)
+total_errors=0
+total_catalogs = 0
 
 logging.basicConfig( level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(name)s %(message)s')
 app = Flask(__name__)
 app.secret_key = 'secret'
+
 COURSE_FILE = 'course_catalog.json'
 
 FlaskInstrumentor().instrument_app(app)
@@ -60,6 +63,7 @@ def index():
 
 @app.route('/catalog')
 def course_catalog():
+    global total_catalogs
     with tracer.start_as_current_span("Render Course Catalog") as span:
         span.set_attribute("route", "/catalog")
         span.set_attribute("method", request.method)
@@ -75,7 +79,9 @@ def course_catalog():
 
         with tracer.start_as_current_span("Render HTML Page") as render_span:
             render_span.set_attribute("template", "course_catalog.html")
-            render_span.set_attribute("total_courses_rendered", len(courses)) 
+            render_span.set_attribute("total_courses_rendered", len(courses))
+            total_catalogs+=1
+            render_span.set_attribute("Total Times Course Catalog Page visited", total_catalogs)
             return render_template('course_catalog.html', courses=courses)
 
 
@@ -106,7 +112,11 @@ def course_details(code):
 
 
 @app.route('/add_course', methods=['GET', 'POST'])
+
 def add_courses():
+    
+    global total_errors
+    
     with tracer.start_as_current_span("Add Course Operation") as span:
         span.set_attribute("route", "/add_course")
         span.set_attribute("method", request.method)
@@ -135,12 +145,15 @@ def add_courses():
                 if course["instructor"] == "": missing.append('instructor')
                 
                 form_span.set_attribute("missing_fields", missing)
+               
                 
                 if len(missing) != 0:
                     flash(f'''
                             Please fill in all the required fields,
                             missing fields: {missing}
                         ''', "error")
+                    total_errors +=1
+                    form_span.set_attribute("Error Count",total_errors)
                     logging.error(f"Missing fields: {missing}")
                     return render_template('add_courses.html', course=course)
                 
