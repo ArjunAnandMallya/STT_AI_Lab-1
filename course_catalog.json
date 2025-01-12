@@ -31,5 +31,38 @@
         "prerequisites": "",
         "grading": "",
         "description": ""
+    },
+    {
+        "code": "ES 335",
+        "name": "ML",
+        "instructor": "Nipun",
+        "semester": "1",
+        "schedule": "1-2",
+        "classroom": "",
+        "prerequisites": "",
+        "grading": "",
+        "description": ""
+    },
+    {
+        "code": "aa",
+        "name": "aa",
+        "instructor": "aa",
+        "semester": "",
+        "schedule": "",
+        "classroom": "",
+        "prerequisites": "",
+        "grading": "",
+        "description": ""
+    },
+    {
+        "code": "aa",
+        "name": "aa",
+        "instructor": "aaa",
+        "semester": "",
+        "schedule": "",
+        "classroom": "",
+        "prerequisites": "",
+        "grading": "",
+        "description": ""
     }
 ]
