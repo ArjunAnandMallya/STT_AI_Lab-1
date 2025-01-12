@@ -64,5 +64,38 @@
         "prerequisites": "",
         "grading": "",
         "description": ""
+    },
+    {
+        "code": "aab",
+        "name": "aab",
+        "instructor": "aab",
+        "semester": "",
+        "schedule": "",
+        "classroom": "",
+        "prerequisites": "",
+        "grading": "",
+        "description": ""
+    },
+    {
+        "code": "aac",
+        "name": "aaac",
+        "instructor": "aac",
+        "semester": "",
+        "schedule": "",
+        "classroom": "",
+        "prerequisites": "",
+        "grading": "",
+        "description": ""
+    },
+    {
+        "code": "aaat",
+        "name": "aaata",
+        "instructor": "aaat",
+        "semester": "",
+        "schedule": "",
+        "classroom": "",
+        "prerequisites": "",
+        "grading": "",
+        "description": ""
     }
 ]

@@ -10,15 +10,27 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.trace import SpanKind
+from pythonjsonlogger import jsonlogger
 
-tracer = trace.get_tracer(__name__)
 
-logging.basicConfig( level=logging.DEBUG,
-                    format='%(asctime)s %(levelname)s %(name)s %(message)s')
+# Set up JSON logging
+log_handler = logging.FileHandler("app.log")
+formatter = jsonlogger.JsonFormatter(
+    '%(asctime)s %(levelname)s %(name)s %(message)s %(pathname)s %(lineno)d'
+)
+log_handler.setFormatter(formatter)
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    handlers=[log_handler]
+)
+
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__)
 app.secret_key = 'secret'
 COURSE_FILE = 'course_catalog.json'
-
+tracer = trace.get_tracer(__name__)
 FlaskInstrumentor().instrument_app(app)
 
 jaeger_host = os.getenv("JAEGER_HOST", "localhost")
@@ -58,6 +70,7 @@ def save_courses(data):
 def index():
     return render_template('index.html')
 
+
 @app.route('/catalog')
 def course_catalog():
     with tracer.start_as_current_span("Render Course Catalog") as span:
@@ -65,99 +78,50 @@ def course_catalog():
         span.set_attribute("method", request.method)
         span.set_attribute("user.ip", request.remote_addr)  
 
-        with tracer.start_as_current_span("Load Courses from JSON") as load_span:
-            courses = load_courses()
-            load_span.set_attribute("total_courses", len(courses))  
-            if courses:
-                load_span.set_attribute("course_codes", [course['code'] for course in courses])  
-            else:
-                load_span.set_attribute("is_empty_catalog", True) 
-
-        with tracer.start_as_current_span("Render HTML Page") as render_span:
-            render_span.set_attribute("template", "course_catalog.html")
-            render_span.set_attribute("total_courses_rendered", len(courses)) 
-            return render_template('course_catalog.html', courses=courses)
+        courses = load_courses()
+        logging.info("Loaded course catalog", extra={"total_courses": len(courses)})
+        return render_template('course_catalog.html', courses=courses)
 
 
 @app.route('/course/<code>')
 def course_details(code):
     with tracer.start_as_current_span("View Course Details") as span:
-        span.set_attribute("route", f"/course/{code}")
-        span.set_attribute("method", request.method)
-        span.set_attribute("user.ip", request.remote_addr) 
-        span.set_attribute("course_code", code)
-        
-        with tracer.start_as_current_span("Load Courses from JSON") as load_span:
-            courses = load_courses()
-            load_span.set_attribute("total_courses", len(courses))
-        
-        with tracer.start_as_current_span("Find Course by Code") as find_span:
-            course = next((course for course in courses if course['code'] == code), None)
-            find_span.set_attribute("course_found", bool(course))
-            
+        courses = load_courses()
+        course = next((course for course in courses if course['code'] == code), None)
         if not course:
-            span.set_status(trace.status.Status(trace.status.StatusCode.ERROR, f"No course found for code {code}"))
+            logger.error("Course not found", extra={"code": code})
             flash(f"No course found with code '{code}'.", "error")
             return redirect(url_for('course_catalog'))
-        
-        with tracer.start_as_current_span("Render Course Details Page") as render_span:
-            render_span.set_attribute("template", "course_details.html")
-            return render_template('course_details.html', course=course)
+        return render_template('course_details.html', course=course)
 
 
 @app.route('/add_course', methods=['GET', 'POST'])
 def add_courses():
-    with tracer.start_as_current_span("Add Course Operation") as span:
-        span.set_attribute("route", "/add_course")
-        span.set_attribute("method", request.method)
-        span.set_attribute("user.ip", request.remote_addr) 
+    if request.method == 'POST':
+        course = {
+            'code': request.form['code'],
+            'name': request.form['name'],
+            'instructor': request.form['instructor'],
+            'semester': request.form['semester'],
+            'schedule': request.form['schedule'],
+            'classroom': request.form['classroom'],
+            'prerequisites': request.form['prerequisites'],
+            'grading': request.form['grading'],
+            'description': request.form['description']
+        }
+        missing = [key for key, value in course.items() if not value]
+        if missing:
+            logger.error("Validation failed", extra={"missing_fields": missing})
+            flash(f"Please fill in all the required fields: {missing}", "error")
+            return render_template('add_courses.html', course=course)
 
-        if request.method == 'POST':
-            with tracer.start_as_current_span("Process Form Submission") as form_span:
-                course = {
-                    'code': request.form['code'],
-                    'name': request.form['name'],
-                    'instructor': request.form['instructor'],
-                    'semester': request.form['semester'],
-                    'schedule': request.form['schedule'],
-                    'classroom': request.form['classroom'],
-                    'prerequisites': request.form['prerequisites'],
-                    'grading': request.form['grading'],
-                    'description': request.form['description']
-                }
-                form_span.set_attribute("course.code", course['code'])
-                form_span.set_attribute("course.name", course['name'])
-                form_span.set_attribute("course.instructor", course['instructor'])
-            
-                missing = []
-                if course["code"] == "": missing.append('code')
-                if course["name"] == "": missing.append('name')
-                if course["instructor"] == "": missing.append('instructor')
-                
-                form_span.set_attribute("missing_fields", missing)
-                
-                if len(missing) != 0:
-                    flash(f'''
-                            Please fill in all the required fields,
-                            missing fields: {missing}
-                        ''', "error")
-                    logging.error(f"Missing fields: {missing}")
-                    return render_template('add_courses.html', course=course)
-                
-                with tracer.start_as_current_span("Save Course Data") as save_span:
-                    save_courses(course)
-                    save_span.set_attribute("is_course_saved", True)
-                    save_span.set_attribute("total_courses", len(load_courses()))  
-                    logging.info(f"Course '{course['name']}' with code '{course['code']}' added to the catalog.")
-                
-                flash(f"Course '{course['name']}' added successfully!", "success")
-                return redirect(url_for('course_catalog'))
-        
-        with tracer.start_as_current_span("Render Add Course Page") as render_span:
-            render_span.set_attribute("template", "add_courses.html")
-            return render_template('add_courses.html')
+        save_courses(course)
+        logger.info("Course added successfully", extra={"course_code": course["code"]})
+        flash(f"Course '{course['name']}' added successfully!", "success")
+        return redirect(url_for('course_catalog'))
+
+    return render_template('add_courses.html')
 
 
 if __name__ == '__main__':
     app.run(debug=True)
-
