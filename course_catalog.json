@@ -22,91 +22,14 @@
         "description": ""
     },
     {
-        "code": "HS 112",
-        "name": "Intro to writing 2",
-        "instructor": "Nivid",
-        "semester": "2",
-        "schedule": "",
-        "classroom": "",
-        "prerequisites": "",
-        "grading": "",
-        "description": ""
-    },
-    {
         "code": "ES 335",
-        "name": "ML",
-        "instructor": "Nipun",
-        "semester": "1",
-        "schedule": "1-2",
-        "classroom": "",
-        "prerequisites": "",
-        "grading": "",
-        "description": ""
-    },
-    {
-        "code": "aa",
-        "name": "aa",
-        "instructor": "aa",
-        "semester": "",
-        "schedule": "",
-        "classroom": "",
-        "prerequisites": "",
-        "grading": "",
-        "description": ""
-    },
-    {
-        "code": "aa",
-        "name": "aa",
-        "instructor": "aaa",
-        "semester": "",
-        "schedule": "",
-        "classroom": "",
-        "prerequisites": "",
-        "grading": "",
-        "description": ""
-    },
-    {
-        "code": "aab",
-        "name": "aab",
-        "instructor": "aab",
-        "semester": "",
-        "schedule": "",
-        "classroom": "",
-        "prerequisites": "",
-        "grading": "",
-        "description": ""
-    },
-    {
-        "code": "aac",
-        "name": "aaac",
-        "instructor": "aac",
-        "semester": "",
-        "schedule": "",
-        "classroom": "",
-        "prerequisites": "",
-        "grading": "",
-        "description": ""
-    },
-    {
-        "code": "aaat",
-        "name": "aaata",
-        "instructor": "aaat",
-        "semester": "",
-        "schedule": "",
-        "classroom": "",
-        "prerequisites": "",
-        "grading": "",
-        "description": ""
-    },
-    {
-        "code": "aagi",
-        "name": "gejkn",
-        "instructor": "wjrek",
-        "semester": "",
-        "schedule": "",
-        "classroom": "",
-        "prerequisites": "",
-        "grading": "",
-        "description": ""
+        "name": "Machine Learning",
+        "instructor": "Prof. Nipun Batra",
+        "semester": "3",
+        "schedule": "2-3:20pm",
+        "classroom": "10/103",
+        "prerequisites": "Computing",
+        "grading": "Relative",
+        "description": "This course would teach you various ML algorithms and its use in various real life applications."
     }
 ]

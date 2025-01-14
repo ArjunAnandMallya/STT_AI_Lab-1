@@ -129,7 +129,6 @@ def course_details(code):
 
 
 @app.route('/add_course', methods=['GET', 'POST'])
-
 def add_courses():
     
     global total_errors
