@@ -10,13 +10,32 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.trace import SpanKind
+from pythonjsonlogger import jsonlogger
+
+
+# Set up JSON logging
+log_handler = logging.FileHandler("app.log")
+console_logs = logging.StreamHandler(
+
+)
+formatter = jsonlogger.JsonFormatter(
+    '%(asctime)s %(levelname)s %(name)s %(message)s %(pathname)s %(lineno)d'
+)
+log_handler.setFormatter(formatter)
+console_logs.setFormatter(formatter)
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    handlers=[log_handler,console_logs]
+)
+
+logger = logging.getLogger(__name__)
 
 tracer = trace.get_tracer(__name__)
 total_errors=0
 total_catalogs = 0
 
-logging.basicConfig( level=logging.DEBUG,
-                    format='%(asctime)s %(levelname)s %(name)s %(message)s')
+
 app = Flask(__name__)
 app.secret_key = 'secret'
 
